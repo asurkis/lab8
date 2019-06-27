@@ -18,4 +18,5 @@ public interface Database extends AutoCloseable {
     boolean checkUser(String email, String Password);
     int getUserId(String email, String userPassword);
     boolean consistsUser(String email);
+    void setNewToken(String email, String newToken);
 }

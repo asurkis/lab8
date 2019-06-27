@@ -242,4 +242,20 @@ public class PostgreSQLDatabase implements Database {
         System.out.println("Error");
         return false;
     }
+
+    @Override
+    public void setNewToken(String email, String newToken) {
+        System.out.println("Changing token for user " + email);
+        try (Connection connection = DriverManager.getConnection(uri, user, password)) {
+            PreparedStatement statement = connection.prepareStatement("UPDATE lab8_users SET password = ? WHERE email = ?");
+            statement.setString(1, newToken);
+            statement.setString(2, email);
+            statement.execute();
+        } catch (SQLException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            return;
+        }
+        System.out.println("Success");
+    }
 }

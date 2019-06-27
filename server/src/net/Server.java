@@ -57,8 +57,8 @@ public class Server implements Runnable, AutoCloseable {
             throw new InvalidCommandLineArgumentException();
         }
 
-//        String password = new String(System.console().readPassword("Password: "));
-        String password = "root";
+        String password = new String(System.console().readPassword("Password: "));
+//        String password = "root";
         database = new PostgreSQLDatabase(args[1], args[2], password);
 
         channel = DatagramChannel.open();
@@ -122,6 +122,9 @@ public class Server implements Runnable, AutoCloseable {
                 Object obj = oi.readObject();
                 if (obj instanceof PacketMessage) {
                     request = (PacketMessage) obj;
+                    request.setAddress (remoteAddress);
+                    messageProcessor.process(request);
+                    System.out.println("Here --> " + request.toString());
                 } else {
                     continue;
                 }
@@ -153,7 +156,6 @@ public class Server implements Runnable, AutoCloseable {
             }
         }
         users.add(remoteAddress);
-        sendMessage(remoteAddress, new PacketMessage(PacketMessage.Head.SET_ADDRESS, remoteAddress));
     }
 
     private void infoMessage(PacketMessage msg) {
@@ -173,21 +175,35 @@ public class Server implements Runnable, AutoCloseable {
     }
 
     // Generate random password for user
-    private boolean genToken(PacketMessage msg) {
+    private void genToken(PacketMessage msg) {
         String email = msg.getLogin();
-        if (database.consistsUser(email)) return false;
         Random rnd = new Random();
         StringBuilder password = new StringBuilder();
         for (int i = 0; i < 4; i++) {
             password.append(getRndChar(rnd));
         }
+        if (database.consistsUser(email)) {
+            sendMessage(msg.getAddress(),
+                    new PacketMessage(PacketMessage.Head.EMAIL_OK));
+            try {
+                sendUserPassword(email, password.toString(), true);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                sendMessage(msg.getAddress(),
+                        new PacketMessage(PacketMessage.Head.EMAIL_ERROR, "Error with sending email, check it or try later", true));
+            }
+            return;
+        }
+
         try {
             sendUserPassword(email, password.toString());
         } catch (MessagingException e) {
             e.printStackTrace();
-            return false;
+            sendMessage(msg.getAddress(),
+                    new PacketMessage(PacketMessage.Head.EMAIL_ERROR, "Error with sending email, check it or try later", true));
         }
-        return true;
+        sendMessage(msg.getAddress(),
+                new PacketMessage(PacketMessage.Head.EMAIL_OK));
     }
 
     private void sendPasswordMail(String passwordToSend, String receiverAddress) throws MessagingException {
@@ -226,6 +242,12 @@ public class Server implements Runnable, AutoCloseable {
     private void sendUserPassword(String email, String password) throws MessagingException {
         sendPasswordMail(password, email);
         database.addUser(email, Utils.md2(password));
+    }
+
+
+    private void sendUserPassword(String email, String password, boolean change) throws MessagingException {
+        sendPasswordMail(password, email);
+        database.setNewToken(email, Utils.md2(password));
     }
 
     // Return true if user successfully authorized

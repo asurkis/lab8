@@ -39,6 +39,10 @@ public class PacketMessage implements Serializable {
     private ArrayList<CollectionElement> elements;
     private String errorMessage;
 
+    public PacketMessage(Head head) {
+        this.head = head;
+    }
+
     public PacketMessage(Head head, String errorMessage, boolean error) {
         this.head = head;
         this.errorMessage = errorMessage;
@@ -99,4 +103,10 @@ public class PacketMessage implements Serializable {
     public SocketAddress getAddress() { return address; }
 
     public ArrayList<CollectionElement> getElements() { return elements; }
+
+    public String getErrorMessage() { return errorMessage; }
+
+    public void setAddress (SocketAddress address) {
+        this.address = address;
+    }
 }
