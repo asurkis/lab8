@@ -2,6 +2,7 @@ package client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ public class MainWindow extends JFrame {
         menuBar.add(langMenu);
         setJMenuBar(menuBar);
 
+        createMenuItem.addActionListener(this::createMenuItemAction);
+
         setLayout(new GridLayout(1, 2));
         add(canvas);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -70,5 +73,9 @@ public class MainWindow extends JFrame {
 
     public JTable getTable() {
         return table;
+    }
+
+    public void createMenuItemAction(ActionEvent e) {
+        main.get
     }
 }

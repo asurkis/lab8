@@ -119,8 +119,8 @@ public class LoginDialog extends JDialog {
             JOptionPane.showMessageDialog(this, emailErrorMessage, "", JOptionPane.ERROR_MESSAGE);
         } else if (head == PacketMessage.Head.EMAIL_OK) {
             main.getAccessDialog().setSelectedEmail(email);
+            main.getAccessDialog().setLd(this);
             main.getAccessDialog().setVisible(true);
-            setVisible(false);
         }
 
         loginButton.setEnabled(true);

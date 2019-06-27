@@ -2,6 +2,7 @@ package client;
 
 import net.NetClient;
 import net.PacketMessage;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.util.ResourceBundle;
 
 public class AccessDialog extends JDialog {
     private Main main;
+    private LoginDialog ld;
     private String emailToSend = "";
 
     private JLabel selectedLoginLabel = new JLabel();
@@ -22,6 +24,10 @@ public class AccessDialog extends JDialog {
 
     private String connectionErrorMessage = "";
     private String tokenErrorMessage = "";
+
+    public void setLd(LoginDialog ld) {
+        this.ld = ld;
+    }
 
     AccessDialog(Main main) {
         super(main.getMainWindow(), true);
@@ -86,6 +92,7 @@ public class AccessDialog extends JDialog {
             JOptionPane.showMessageDialog(this, tokenErrorMessage, "", JOptionPane.ERROR_MESSAGE);
         } else if (head == PacketMessage.Head.LOGIN_OK) {
             setVisible(false);
+            ld.setVisible(false);
         }
         validateButton.setEnabled(true);
         langButton.setEnabled(true);

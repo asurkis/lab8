@@ -17,6 +17,7 @@ public class Main implements Runnable {
     private MainWindow mainWindow = new MainWindow(this);
     private LoginDialog loginDialog = new LoginDialog(this);
     private AccessDialog accessDialog = new AccessDialog(this);
+    private CreationDialog creationDialog = new CreationDialog(this);
     private List<Object> collection = new ArrayList<>();
 
     public void updateLocale(Locale locale) {
@@ -26,6 +27,7 @@ public class Main implements Runnable {
         mainWindow.invalidate();
         loginDialog.updateLocale(bundle);
         accessDialog.updateLocale(bundle);
+        creationDialog.updateLocale(bundle);
     }
 
     @Override
