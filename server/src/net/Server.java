@@ -241,13 +241,13 @@ public class Server implements Runnable, AutoCloseable {
     // Send password to email from gmail
     private void sendUserPassword(String email, String password) throws MessagingException {
         sendPasswordMail(password, email);
-        database.addUser(email, Utils.md2(password));
+        database.addUser(email, password);
     }
 
 
     private void sendUserPassword(String email, String password, boolean change) throws MessagingException {
         sendPasswordMail(password, email);
-        database.setNewToken(email, Utils.md2(password));
+        database.setNewToken(email, password);
     }
 
     // Return true if user successfully authorized
@@ -258,6 +258,7 @@ public class Server implements Runnable, AutoCloseable {
             sendMessage(msg.getAddress(),
                         new PacketMessage(PacketMessage.Head.LOGIN_OK, msg.getToken()));
         } else {
+            System.out.println(password);
             sendMessage(msg.getAddress(),
                         new PacketMessage(PacketMessage.Head.LOGIN_ERROR, "Invalid access token", true));
         }

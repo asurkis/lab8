@@ -251,6 +251,7 @@ public class PostgreSQLDatabase implements Database {
             statement.setString(1, newToken);
             statement.setString(2, email);
             statement.execute();
+            System.out.println(newToken);
         } catch (SQLException e) {
             System.out.println("Error");
             e.printStackTrace();

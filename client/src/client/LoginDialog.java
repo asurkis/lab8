@@ -111,13 +111,14 @@ public class LoginDialog extends JDialog {
         do {
             response = client.awaitMessage();
             head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.SET_ADDRESS && head != PacketMessage.Head.EMAIL_ERROR);
+        } while (head != null && head != PacketMessage.Head.EMAIL_ERROR && head != PacketMessage.Head.EMAIL_OK);
 
         if (head == null) {
             JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
         } else if (head == PacketMessage.Head.EMAIL_ERROR) {
             JOptionPane.showMessageDialog(this, emailErrorMessage, "", JOptionPane.ERROR_MESSAGE);
         } else if (head == PacketMessage.Head.EMAIL_OK) {
+            main.getAccessDialog().setSelectedEmail(email);
             main.getAccessDialog().setVisible(true);
             setVisible(false);
         }
