@@ -117,9 +117,8 @@ public class LoginDialog extends JDialog {
             JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
         } else if (head == PacketMessage.Head.EMAIL_ERROR) {
             JOptionPane.showMessageDialog(this, emailErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.SET_ADDRESS) {
-            main.getAccessDialog().setSelectedEmail(email);
-            client.setSelfAddress(response.getAddress());
+        } else if (head == PacketMessage.Head.EMAIL_OK) {
+            main.getAccessDialog().setVisible(true);
             setVisible(false);
         }
 
