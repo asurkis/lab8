@@ -76,6 +76,9 @@ public class LabTableModel implements TableModel {
 
     public void setElements(List<CollectionElement> elements) {
         this.elements = elements;
+        for (TableModelListener l : listeners) {
+            l.tableChanged(new TableModelEvent(this));
+        }
     }
 
     public void updateLocale(ResourceBundle bundle) {

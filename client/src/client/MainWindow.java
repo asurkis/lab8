@@ -99,41 +99,45 @@ public class MainWindow extends JFrame {
 
     public void deleteFirstMenuItemAction(ActionEvent event) {
         NetClient client = main.getClient();
-        client.sendMessage(PacketMessage.Head.REMOVE_FIRST, null);
-        client.setSoTimeout(10_000);
-        PacketMessage response;
-        PacketMessage.Head head = null;
-        do {
-            response = client.awaitMessage();
-            head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.REMOVE_FIRST_OK && head != PacketMessage.Head.REMOVE_FIRST_ERROR);
+        synchronized (client) {
+            client.sendMessage(PacketMessage.Head.REMOVE_FIRST, null);
+            client.setSoTimeout(10_000);
+            PacketMessage response;
+            PacketMessage.Head head = null;
+            do {
+                response = client.awaitMessage();
+                head = response != null ? response.getHead() : null;
+            } while (head != null && head != PacketMessage.Head.REMOVE_FIRST_OK && head != PacketMessage.Head.REMOVE_FIRST_ERROR);
 
-        if (head == null) {
-            JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.REMOVE_FIRST_ERROR) {
-            JOptionPane.showMessageDialog(this, removeFirstErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.REMOVE_FIRST_OK) {
-            JOptionPane.showMessageDialog(this, removeFirstOkMessage, "", JOptionPane.PLAIN_MESSAGE);
+            if (head == null) {
+                JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.REMOVE_FIRST_ERROR) {
+                JOptionPane.showMessageDialog(this, removeFirstErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.REMOVE_FIRST_OK) {
+                JOptionPane.showMessageDialog(this, removeFirstOkMessage, "", JOptionPane.PLAIN_MESSAGE);
+            }
         }
     }
 
     public void deleteLastMenuItemAction(ActionEvent event) {
         NetClient client = main.getClient();
-        client.sendMessage(PacketMessage.Head.REMOVE_LAST, null);
-        client.setSoTimeout(10_000);
-        PacketMessage response;
-        PacketMessage.Head head = null;
-        do {
-            response = client.awaitMessage();
-            head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.REMOVE_LAST_OK && head != PacketMessage.Head.REMOVE_LAST_ERROR);
+        synchronized (client) {
+            client.sendMessage(PacketMessage.Head.REMOVE_LAST, null);
+            client.setSoTimeout(10_000);
+            PacketMessage response;
+            PacketMessage.Head head = null;
+            do {
+                response = client.awaitMessage();
+                head = response != null ? response.getHead() : null;
+            } while (head != null && head != PacketMessage.Head.REMOVE_LAST_OK && head != PacketMessage.Head.REMOVE_LAST_ERROR);
 
-        if (head == null) {
-            JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.REMOVE_LAST_ERROR) {
-            JOptionPane.showMessageDialog(this, removeLastErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.REMOVE_LAST_OK) {
-            JOptionPane.showMessageDialog(this, removeLastOkMessage, "", JOptionPane.PLAIN_MESSAGE);
+            if (head == null) {
+                JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.REMOVE_LAST_ERROR) {
+                JOptionPane.showMessageDialog(this, removeLastErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.REMOVE_LAST_OK) {
+                JOptionPane.showMessageDialog(this, removeLastOkMessage, "", JOptionPane.PLAIN_MESSAGE);
+            }
         }
     }
 }

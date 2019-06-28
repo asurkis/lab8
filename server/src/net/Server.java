@@ -79,7 +79,7 @@ public class Server implements Runnable, AutoCloseable {
     public void run() {
         Shower shower = new Shower();
         shower.setDefaults(this, database);
-        shower.run();
+        new Thread(shower).start();
         MessageProcessor messageProcessor = new MessageProcessor();
         messageProcessor.setMessageProcessor(PacketMessage.Head.EMAIL_LOGIN, msg -> genToken(msg));
         messageProcessor.setMessageProcessor(PacketMessage.Head.TOKEN_LOGIN, msg -> authorize(msg));
@@ -195,6 +195,7 @@ public class Server implements Runnable, AutoCloseable {
         list.sort(CollectionElement::compareTo);
         for (SocketAddress user : users) {
             sendMessage(user, new PacketMessage(PacketMessage.Head.SHOW, list));
+            System.out.println(new PacketMessage(PacketMessage.Head.SHOW, list));
         }
     }
 

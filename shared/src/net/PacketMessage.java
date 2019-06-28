@@ -81,8 +81,8 @@ public class PacketMessage implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("{head: %s; body: %s; creationDate: %s }",
-                head, body, creationDate);
+        return String.format("{head: %s; body: %s; elements: %s; creationDate: %s }",
+                head, body, elements, creationDate);
     }
 
     @Override

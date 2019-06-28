@@ -14,7 +14,7 @@ public class ConnectionHandler implements Runnable, Cloneable {
     public void run() {
         MessageProcessor messageProcessor = new MessageProcessor();
         messageProcessor.setMessageProcessor(PacketMessage.Head.SHOW,
-                                             pm -> Client.setElements(pm.getElements()));
+                                             pm -> main.getTableModel().setElements(pm.getElements()));
         PacketMessage pm;
 
         while (true) {

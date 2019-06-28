@@ -19,7 +19,7 @@ public class Shower implements Runnable {
     public  void run() {
         while (true) {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(20000);
                 ArrayList<CollectionElement> list = database.show(database.getUserId("", ""));
                 list.sort(CollectionElement::compareTo);
                 for (SocketAddress user : server.getUsers()) {
