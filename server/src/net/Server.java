@@ -23,6 +23,9 @@ import java.util.*;
 
 public class Server implements Runnable, AutoCloseable {
     private ArrayList<SocketAddress> users = new ArrayList<>();
+
+    public ArrayList<SocketAddress> getUsers() { return users; }
+
     public static void main(String[] args) {
         try (Server server = new Server(args)) {
             server.run();
@@ -40,6 +43,8 @@ public class Server implements Runnable, AutoCloseable {
 
     private final Database database;
     private DatagramChannel channel;
+
+    public Database getDatabase() { return database; }
 
     public Server(String[] args) throws IOException, SQLException, InvalidCommandLineArgumentException {
         if (args.length < 3) {
@@ -72,6 +77,9 @@ public class Server implements Runnable, AutoCloseable {
     }
 
     public void run() {
+        Shower shower = new Shower();
+        shower.setDefaults(this, database);
+        shower.run();
         MessageProcessor messageProcessor = new MessageProcessor();
         messageProcessor.setMessageProcessor(PacketMessage.Head.EMAIL_LOGIN, msg -> genToken(msg));
         messageProcessor.setMessageProcessor(PacketMessage.Head.TOKEN_LOGIN, msg -> authorize(msg));
@@ -154,7 +162,7 @@ public class Server implements Runnable, AutoCloseable {
         }
     }
 
-    private void sendMessage(SocketAddress receiver, PacketMessage sendingMessage) {
+    public void sendMessage(SocketAddress receiver, PacketMessage sendingMessage) {
         new Thread(() -> {
             MessageProcessor messageProcessor = new MessageProcessor();
 
