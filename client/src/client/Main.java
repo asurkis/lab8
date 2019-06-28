@@ -73,4 +73,6 @@ public class Main implements Runnable {
     public NetClient getClient() {
         return client;
     }
+
+    public CreationDialog getCreationDialog() { return creationDialog; }
 }

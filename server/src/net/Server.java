@@ -77,27 +77,46 @@ public class Server implements Runnable, AutoCloseable {
         messageProcessor.setMessageProcessor(PacketMessage.Head.TOKEN_LOGIN, msg -> authorize(msg));
         messageProcessor.setMessageProcessor(PacketMessage.Head.INFO, this::infoMessage);
         messageProcessor.setMessageProcessor(PacketMessage.Head.REMOVE_FIRST, msg -> {
-            database.removeFirst(database.getUserId(msg.getLogin(), msg.getToken()));
+            if (database.removeFirst(database.getUserId(msg.getLogin(), msg.getToken()))) {
+                sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_FIRST_OK));
+                showMessage(msg);
+                return;
+            }
+            sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_FIRST_ERROR));
         });
         messageProcessor.setMessageProcessor(PacketMessage.Head.REMOVE_LAST, msg -> {
-            database.removeLast(database.getUserId(msg.getLogin(), msg.getToken()));
+            if (database.removeLast(database.getUserId(msg.getLogin(), msg.getToken()))) {
+                sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_LAST_OK));
+                showMessage(msg);
+                return;
+            }
+            sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_LAST_ERROR));
         });
         messageProcessor.setMessageProcessor(PacketMessage.Head.ADD, msg -> {
             if (msg.getBody() instanceof CollectionElement) {
                 database.addElement((CollectionElement) msg.getBody(),
                         database.getUserId(msg.getLogin(), msg.getToken()));
+                sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.ADD_OK));
+                ArrayList<CollectionElement> list = database.show(database.getUserId(msg.getLogin(), msg.getToken()));
+                list.sort(CollectionElement::compareTo);
+                for (SocketAddress current : users) {
+                    sendMessage(current, new PacketMessage(PacketMessage.Head.SHOW, list));
+                }
+                return;
             }
-            ArrayList<CollectionElement> list = database.show(database.getUserId(msg.getLogin(), msg.getToken()));
-            list.sort(CollectionElement::compareTo);
-            for (SocketAddress current : users) {
-                sendMessage(current, new PacketMessage(PacketMessage.Head.SHOW, list));
-            }
+            sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.ADD_ERROR));
+
         });
         messageProcessor.setMessageProcessor(PacketMessage.Head.REMOVE, msg -> {
             if (msg.getBody() instanceof CollectionElement) {
-                database.removeElement((CollectionElement) msg.getBody(),
-                        database.getUserId(msg.getLogin(), msg.getToken()));
+                if (database.removeElement((CollectionElement) msg.getBody(),
+                        database.getUserId(msg.getLogin(), msg.getToken()))) {
+                    sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_OK));
+                    showMessage(msg);
+                    return;
+                }
             }
+            sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.REMOVE_ERROR));
         });
         messageProcessor.setMessageProcessor(PacketMessage.Head.SHOW, this::showMessage);
         messageProcessor.setMessageProcessor(PacketMessage.Head.STOP, msg -> shouldRun = false);
@@ -166,7 +185,9 @@ public class Server implements Runnable, AutoCloseable {
     private void showMessage(PacketMessage msg) {
         ArrayList<CollectionElement> list = database.show(database.getUserId(msg.getLogin(), msg.getToken()));
         list.sort(CollectionElement::compareTo);
-        sendMessage(msg.getAddress(), new PacketMessage(PacketMessage.Head.SHOW, list));
+        for (SocketAddress user : users) {
+            sendMessage(user, new PacketMessage(PacketMessage.Head.SHOW, list));
+        }
     }
 
     private char getRndChar(Random rnd) {

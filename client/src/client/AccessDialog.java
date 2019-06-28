@@ -60,7 +60,7 @@ public class AccessDialog extends JDialog {
         validateButton.setText(bundle.getString("button.validate"));
         langButton.setText(bundle.getString("button.language"));
         connectionErrorMessage = bundle.getString("message.error.connection");
-        tokenErrorMessage = bundle.getString("message.error.email");
+        tokenErrorMessage = bundle.getString("message.error.token");
 
         pack();
         setLocationRelativeTo(getOwner());

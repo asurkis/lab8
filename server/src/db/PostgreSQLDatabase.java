@@ -47,8 +47,7 @@ public class PostgreSQLDatabase implements Database {
         System.out.println("Request 'show' from user #" + userId);
         try (Connection connection = DriverManager.getConnection(uri, user, password)) {
             ArrayList<CollectionElement> result = new ArrayList<>();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM lab8 WHERE user_id = ?");
-            statement.setInt(1, userId);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM lab8");
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 String name = rs.getString("name");
@@ -108,7 +107,7 @@ public class PostgreSQLDatabase implements Database {
     }
 
     @Override
-    public void removeElement(CollectionElement element, int userId) {
+    public boolean removeElement(CollectionElement element, int userId) {
         System.out.println("Request 'remove' from user #" + userId);
         try (Connection connection = DriverManager.getConnection(uri, user, password)) {
             PreparedStatement statement = connection.prepareStatement(
@@ -125,9 +124,11 @@ public class PostgreSQLDatabase implements Database {
             statement.setInt(5, userId);
             statement.execute();
             System.out.println("Success");
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error");
+            return false;
         }
     }
 
@@ -171,7 +172,7 @@ public class PostgreSQLDatabase implements Database {
     }
 
     @Override
-    public void removeFirst(int userId) {
+    public boolean removeFirst(int userId) {
         System.out.println("Request 'remove_first' from user #" + userId);
         try (Connection connection = DriverManager.getConnection(uri, user, password)) {
             PreparedStatement statement = connection.prepareStatement(
@@ -180,14 +181,16 @@ public class PostgreSQLDatabase implements Database {
             statement.setInt(1, userId);
             statement.execute();
             System.out.println("Success");
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error");
+            return false;
         }
     }
 
     @Override
-    public void removeLast(int userId) {
+    public boolean removeLast(int userId) {
         System.out.println("Request 'remove_last' from user #" + userId);
         try (Connection connection = DriverManager.getConnection(uri, user, password)) {
             PreparedStatement statement = connection.prepareStatement(
@@ -196,9 +199,11 @@ public class PostgreSQLDatabase implements Database {
             statement.setInt(1, userId);
             statement.execute();
             System.out.println("Success");
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error");
+            return false;
         }
     }
 
