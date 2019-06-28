@@ -19,8 +19,6 @@ public class AccessDialog extends JDialog {
     private JLabel codeLabel = new JLabel();
     private JTextField codeField = new JTextField();
     private JButton validateButton = new JButton();
-    private JButton resendCodeButton = new JButton();
-    private JButton langButton = new JButton();
 
     private String connectionErrorMessage = "";
     private String tokenErrorMessage = "";
@@ -46,7 +44,7 @@ public class AccessDialog extends JDialog {
 
         Box horizontalBox = Box.createHorizontalBox();
         horizontalBox.add(validateButton);
-        horizontalBox.add(langButton);
+        horizontalBox.add(new LangSelector(main));
         verticalBox.add(horizontalBox);
 
         validateButton.addActionListener(this::validateButtonAction);
@@ -58,7 +56,6 @@ public class AccessDialog extends JDialog {
         selectedLoginLabel.setText(bundle.getString("label.login"));
         codeLabel.setText(bundle.getString("label.code"));
         validateButton.setText(bundle.getString("button.validate"));
-        langButton.setText(bundle.getString("button.language"));
         connectionErrorMessage = bundle.getString("message.error.connection");
         tokenErrorMessage = bundle.getString("message.error.token");
 
@@ -74,7 +71,6 @@ public class AccessDialog extends JDialog {
 
     private void validateButtonAction(ActionEvent event) {
         validateButton.setEnabled(false);
-        langButton.setEnabled(false);
         NetClient client = main.getClient();
         client.setToken(codeField.getText());
         client.sendMessage(PacketMessage.Head.TOKEN_LOGIN, null);
@@ -95,6 +91,5 @@ public class AccessDialog extends JDialog {
             ld.setVisible(false);
         }
         validateButton.setEnabled(true);
-        langButton.setEnabled(true);
     }
 }

@@ -27,7 +27,6 @@ public class LoginDialog extends JDialog {
     private JLabel serverPortLabel = new JLabel();
     private JTextField serverPortField = new JTextField();
     private JButton loginButton = new JButton();
-    private JButton langButton = new JButton();
 
     LoginDialog(Main main) {
         super(main.getMainWindow(), true);
@@ -39,6 +38,8 @@ public class LoginDialog extends JDialog {
 
         loginButton.addActionListener(this::loginAction);
         loginField.addActionListener(this::loginAction);
+        serverAddressField.addActionListener(this::loginAction);
+        serverPortField.addActionListener(this::loginAction);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -50,7 +51,6 @@ public class LoginDialog extends JDialog {
         serverPortField.setHorizontalAlignment(SwingConstants.CENTER);
 
         loginButton.setFocusable(false);
-        langButton.setFocusable(false);
 
         Box verticalBox = Box.createVerticalBox();
         verticalBox.add(loginLabel);
@@ -64,7 +64,7 @@ public class LoginDialog extends JDialog {
         Box horizontalBox = Box.createHorizontalBox();
         horizontalBox.add(loginButton);
         horizontalBox.add(Box.createHorizontalGlue());
-        horizontalBox.add(langButton);
+        horizontalBox.add(new LangSelector(main));
         verticalBox.add(horizontalBox);
         add(verticalBox);
     }
@@ -72,7 +72,6 @@ public class LoginDialog extends JDialog {
     public void updateLocale(ResourceBundle bundle) {
         loginLabel.setText(bundle.getString("label.login"));
         loginButton.setText(bundle.getString("button.login"));
-        langButton.setText(bundle.getString("button.language"));
         serverAddressLabel.setText(bundle.getString("label.server.address"));
         serverPortLabel.setText(bundle.getString("label.server.port"));
 

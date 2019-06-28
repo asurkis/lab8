@@ -10,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MainWindow extends JFrame {
@@ -77,6 +78,7 @@ public class MainWindow extends JFrame {
         String[] langCodeKeys = bundle.getString("lang.list").split(",");
         for (String langCode : langCodeKeys) {
             JMenuItem item = new JMenuItem(bundle.getString("lang.name." + langCode));
+            item.addActionListener(e -> main.updateLocale(Locale.forLanguageTag(langCode.replace('_', '-'))));
             langMenu.add(item);
         }
 

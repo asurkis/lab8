@@ -4,8 +4,10 @@ import collection.CollectionElement;
 import net.NetClient;
 
 import javax.swing.*;
+import java.awt.*;
 import java.net.SocketException;
 import java.util.*;
+import java.util.List;
 
 public class Main implements Runnable {
     public static void main(String[] args) {
@@ -38,11 +40,6 @@ public class Main implements Runnable {
             e.printStackTrace();
         }
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
         updateLocale(Locale.getDefault());
 
         mainWindow.setLocationRelativeTo(null);
