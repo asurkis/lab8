@@ -1,6 +1,8 @@
 package client;
 
 import collection.CollectionElement;
+import net.ConnectionHandler;
+import net.MessageProcessor;
 import net.NetClient;
 
 import javax.swing.*;
@@ -21,6 +23,8 @@ public class Main implements Runnable {
     private AccessDialog accessDialog = new AccessDialog(this);
     private CreationDialog creationDialog = new CreationDialog(this);
     private List<Object> collection = new ArrayList<>();
+    private MessageProcessor messageProcessor = new MessageProcessor();
+    private ConnectionHandler handler = new ConnectionHandler(this, messageProcessor);
 
     public void updateLocale(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("client/text", locale);
@@ -41,6 +45,10 @@ public class Main implements Runnable {
         }
 
         updateLocale(Locale.getDefault());
+
+        Thread thread = new Thread(handler);
+        thread.setDaemon(true);
+        thread.start();
 
         mainWindow.setLocationRelativeTo(null);
         mainWindow.setVisible(true);
@@ -72,4 +80,12 @@ public class Main implements Runnable {
     }
 
     public CreationDialog getCreationDialog() { return creationDialog; }
+
+    public ConnectionHandler getHandler() {
+        return handler;
+    }
+
+    public MessageProcessor getMessageProcessor() {
+        return messageProcessor;
+    }
 }

@@ -94,32 +94,34 @@ public class LoginDialog extends JDialog {
         String email = loginField.getText();
         NetClient client = main.getClient();
 
-        try {
-            client.setAddress(InetAddress.getByName(serverAddressField.getText()));
-            client.setPort(Integer.parseInt(serverPortField.getText()));
-        } catch (UnknownHostException e) {
-            JOptionPane.showMessageDialog(this, ipErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, portErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        }
-        client.setLogin(email);
-        client.sendMessage(PacketMessage.Head.EMAIL_LOGIN, null);
-        client.setSoTimeout(10_000);
-        PacketMessage response;
-        PacketMessage.Head head = null;
-        do {
-            response = client.awaitMessage();
-            head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.EMAIL_ERROR && head != PacketMessage.Head.EMAIL_OK);
+        synchronized (client) {
+            try {
+                client.setAddress(InetAddress.getByName(serverAddressField.getText()));
+                client.setPort(Integer.parseInt(serverPortField.getText()));
+            } catch (UnknownHostException e) {
+                JOptionPane.showMessageDialog(this, ipErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, portErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            }
+            client.setLogin(email);
+            client.sendMessage(PacketMessage.Head.EMAIL_LOGIN, null);
+            client.setSoTimeout(10_000);
+            PacketMessage response;
+            PacketMessage.Head head = null;
+            do {
+                response = client.awaitMessage();
+                head = response != null ? response.getHead() : null;
+            } while (head != null && head != PacketMessage.Head.EMAIL_ERROR && head != PacketMessage.Head.EMAIL_OK);
 
-        if (head == null) {
-            JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.EMAIL_ERROR) {
-            JOptionPane.showMessageDialog(this, emailErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.EMAIL_OK) {
-            main.getAccessDialog().setSelectedEmail(email);
-            main.getAccessDialog().setLd(this);
-            main.getAccessDialog().setVisible(true);
+            if (head == null) {
+                JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.EMAIL_ERROR) {
+                JOptionPane.showMessageDialog(this, emailErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.EMAIL_OK) {
+                main.getAccessDialog().setSelectedEmail(email);
+                main.getAccessDialog().setLd(this);
+                main.getAccessDialog().setVisible(true);
+            }
         }
 
         loginButton.setEnabled(true);

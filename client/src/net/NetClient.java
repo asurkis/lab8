@@ -24,6 +24,7 @@ public class NetClient implements AutoCloseable {
     }
 
     public void sendMessage(PacketMessage.Head head, Object body) {
+        System.err.println("Send: " + head + " with body " + body);
         sendMessage(new PacketMessage(head, body, login, token, selfAddress));
     }
 

@@ -86,31 +86,43 @@ public class CreationDialog extends JDialog {
         sizeField.setEnabled(false);
         posXField.setEnabled(false);
         posYField.setEnabled(false);
-        String name = nameField.getText();
-        double size = Double.parseDouble(sizeField.getText());
-        double posX = Double.parseDouble(posXField.getText());
-        double posY = Double.parseDouble(posYField.getText());
-        CollectionElement toAdd = new CollectionElement(name, size, posX, posY);
-        NetClient client = main.getClient();
-        client.sendMessage(PacketMessage.Head.ADD, toAdd);
-        client.setSoTimeout(10_000);
-        PacketMessage response;
-        PacketMessage.Head head = null;
-        do {
-            response = client.awaitMessage();
-            head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.ADD_OK && head != PacketMessage.Head.ADD_ERROR);
 
-        if (head == null) {
-            JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.ADD_ERROR) {
-            JOptionPane.showMessageDialog(this, addErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.ADD_OK) {
-            nameField.setText("");
-            sizeField.setText("");
-            posXField.setText("");
-            posYField.setText("");
+        try {
+            String name = nameField.getText();
+            double size = Double.parseDouble(sizeField.getText());
+            double posX = Double.parseDouble(posXField.getText());
+            double posY = Double.parseDouble(posYField.getText());
+            CollectionElement toAdd = new CollectionElement(name, size, posX, posY);
+            NetClient client = main.getClient();
+
+            synchronized (client) {
+                client.sendMessage(PacketMessage.Head.ADD, toAdd);
+                client.setSoTimeout(10_000);
+                PacketMessage response;
+                PacketMessage.Head head = null;
+                do {
+                    response = client.awaitMessage();
+                    head = response != null ? response.getHead() : null;
+                    if (response != null) {
+                        main.getMessageProcessor().process(response);
+                    }
+                } while (head != null && head != PacketMessage.Head.ADD_OK && head != PacketMessage.Head.ADD_ERROR);
+
+                if (head == null) {
+                    JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+                } else if (head == PacketMessage.Head.ADD_ERROR) {
+                    JOptionPane.showMessageDialog(this, addErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+                } else if (head == PacketMessage.Head.ADD_OK) {
+                    nameField.setText("");
+                    sizeField.setText("");
+                    posXField.setText("");
+                    posYField.setText("");
+                }
+            }
+        } catch(NumberFormatException e){
+            JOptionPane.showConfirmDialog(this, e.getMessage());
         }
+
         nameField.setEnabled(true);
         sizeField.setEnabled(true);
         posXField.setEnabled(true);

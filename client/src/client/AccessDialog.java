@@ -72,23 +72,25 @@ public class AccessDialog extends JDialog {
     private void validateButtonAction(ActionEvent event) {
         validateButton.setEnabled(false);
         NetClient client = main.getClient();
-        client.setToken(codeField.getText());
-        client.sendMessage(PacketMessage.Head.TOKEN_LOGIN, null);
-        client.setSoTimeout(10_000);
-        PacketMessage response;
-        PacketMessage.Head head = null;
-        do {
-            response = client.awaitMessage();
-            head = response != null ? response.getHead() : null;
-        } while (head != null && head != PacketMessage.Head.LOGIN_OK && head != PacketMessage.Head.LOGIN_ERROR);
+        synchronized (client) {
+            client.setToken(codeField.getText());
+            client.sendMessage(PacketMessage.Head.TOKEN_LOGIN, null);
+            client.setSoTimeout(10_000);
+            PacketMessage response;
+            PacketMessage.Head head = null;
+            do {
+                response = client.awaitMessage();
+                head = response != null ? response.getHead() : null;
+            } while (head != null && head != PacketMessage.Head.LOGIN_OK && head != PacketMessage.Head.LOGIN_ERROR);
 
-        if (head == null) {
-            JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.LOGIN_ERROR) {
-            JOptionPane.showMessageDialog(this, tokenErrorMessage, "", JOptionPane.ERROR_MESSAGE);
-        } else if (head == PacketMessage.Head.LOGIN_OK) {
-            setVisible(false);
-            ld.setVisible(false);
+            if (head == null) {
+                JOptionPane.showMessageDialog(this, connectionErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.LOGIN_ERROR) {
+                JOptionPane.showMessageDialog(this, tokenErrorMessage, "", JOptionPane.ERROR_MESSAGE);
+            } else if (head == PacketMessage.Head.LOGIN_OK) {
+                setVisible(false);
+                ld.setVisible(false);
+            }
         }
         validateButton.setEnabled(true);
     }
